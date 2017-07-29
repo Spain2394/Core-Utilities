@@ -13,6 +13,7 @@
 using std::cout;
 using std::endl;
 using std::string;
+using std::cerr;
 
 /* Set buffer size to 4096 bytes */
 const int BUFF_SIZE = 4096;
@@ -25,7 +26,7 @@ void writeBytes(int fd, int byte_offset);
 
 void errorMess(int err);
 
-void stdInOut();
+void stdInOut(int fd);
 
 
 /*!
@@ -43,47 +44,45 @@ int main(const int argc, char *argv[]) {
 
     int offset;// number bytes or lines specified
 
-
-
-    /*No arguments*/
-    /*Should not be the case in linux*/
-    /*files not specified*/
-    if (argc != 4) {
-        errorMess (errno);
+    /* command prompt simply takes input when no filename specified*/
+    if (argc <  4) {
+        stdInOut (STDIN_FILENO);
+        exit (0);
     }
+
     /*check to make sure regular file*/
-
-
 
     if (stat (argv[3], &buf) == -1) {
         errorMess (errno);
     }
 
-
+    /*check to ensure valid type*/
     if (S_ISDIR (buf.st_mode) == 1) /*dir, do not do anything file*/
-        return 0; /* jus dont do anything if it is a dir*/
+        return 0;
 
     else if (S_ISREG(buf.st_mode) == 0) /*not regular file*/
         errorMess (errno);
 
-
-
     /* file arguments specified */
-    filename = argv[3];// argument 1 is a name of file
+    filename = argv[3];/*argument 4 is a name of file*/
 
     int fd = open (filename, O_RDONLY);/* open file*/
     if (fd == -1) errorMess (errno);
 
-    offset = atoi (argv[2]);
+    offset = atoi (argv[2]);/* the amount of lines or bytes to read*/
     if (strcmp (argv[1], "-n") == 0) {
         writeLines (fd, offset);
     } else if (strcmp (argv[1], "-c") == 0) {
         writeBytes (fd, offset);
     }
-        /* cannot open file */
     else {
-        errorMess (errno);
+        errorMess (errno);/*if not one of the two options above, then error*/
     }
+
+
+    if (close (fd) == -1)
+        errorMess (errno);
+
 
     return EXIT_SUCCESS;
 } // main
@@ -114,12 +113,9 @@ void writeBytes(int fd, int byte_offset) {
     while ((n = read (fd, buffer, last_bytes)) > 0) { // read the entire buffer
         if (write (STDOUT_FILENO, buffer, byte_offset) == -1)
             errorMess (errno);
-        else break; // break after reading the first c bytes.
+//        else break; // break after reading the first c bytes.
     } //
 
-
-    if (close (fd) == -1)
-        errorMess (errno);
 }
 
 
@@ -130,7 +126,8 @@ void writeBytes(int fd, int byte_offset) {
  */
 void errorMess(int err) {
 
-    perror (strerror (err));
+
+    cerr<< "ERROR " << strerror (errno) << endl;
     exit (EXIT_FAILURE); // exit program
 }
 
@@ -141,6 +138,7 @@ void writeLines(int fd, int line_offset) {
     string content;
     // size of data buffer
     char buffer[BUFF_SIZE];    // data buffer
+
     int n = 0;
     int i = 0;// number of bytes read
 
@@ -150,19 +148,54 @@ void writeLines(int fd, int line_offset) {
 
     }
 
-    for (i = content.size () - 1; i > 0 && (lineCount <= line_offset); --i) {
-        int line_len;
+    for (i = content.size () - 1; i >= 0 && (lineCount < line_offset); --i)
+    {
         char letter = content[i];
 
         if (letter == '\n') {
             lineCount++;
         }
     }
+     /* this is because i locates '\n' so we want one character to the right*/
+    /*And b/f loop is exited it moves the pointer one to the left of '\n'*/
 
-    content = content.substr (i, content.size ());
+    content = content.substr (i+2, content.size ());
 
-    cout << content;
+    char storage[BUFF_SIZE];
+    int z =0;
+    for(char& s: content)
+    {
+        storage[z] = s;
+        z++;
+    }
 
-    if (close (fd) == -1)
+    /* Only way to match shell was to used unbuffered i/o */
+    if(write (STDOUT_FILENO,storage,content.size ()) == -1)
         errorMess (errno);
+
+
+}
+void stdInOut(int fd) {
+    int n;
+    char buffer[BUFF_SIZE];
+    string content;
+
+    while ((n = read (STDIN_FILENO, buffer, BUFF_SIZE)) > 0) { // read the entire buffer
+        content += buffer;
+    }
+
+    char storage[256];
+    int z =0;
+    for(char& s: content)
+    {
+
+        storage[z] = s;
+        z++;
+    }
+
+    /* Only way to match shell was to used unbuffered i/o */
+    if(write (STDOUT_FILENO,storage,n) == -1)
+        errorMess (errno);
+
+
 }
