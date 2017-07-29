@@ -37,15 +37,37 @@ int main(const int argc, char *argv[])
 
     struct stat buf;
     char *filename;
-    bool useLines;
-    string arg;
+    bool useLines = 0;
+    string arg = "";
     int fd;
-    int offset;// number bytes or lines specified
+    int offset =0;// number bytes or lines specified
 
+     if (argc==1)
+    {
+        stdInOut (STDIN_FILENO);
+    }
 
-    /* command prompt simply takes input when no filename specified*/
-    if (argc <= 2) {
+    else if (argc < 2)
+    {
         errorMess (1);
+    }
+    /* command prompt simply takes input when no filename specified*/
+    else if (argc == 2) {
+        if (stat (argv[1], &buf) == -1)
+        {
+            errorMess (errno);
+        }if (S_ISDIR (buf.st_mode) == 1) /*dir, do not do anything*/
+            return 0;
+
+        else if (S_ISREG(buf.st_mode) == 0) /*not regular file*/
+            errorMess (errno);
+        filename = argv[1];
+
+        fd = open (filename, O_RDONLY);/* open file to read its content*/
+        if (fd == -1) errorMess (errno);
+
+        stdInOut (fd);
+
     }
 
         /* If the args are thr right number, make sure they are the right kind*/
@@ -77,7 +99,7 @@ int main(const int argc, char *argv[])
     /*  arguments are provided*/
     /*check to make sure regular file*/
 
-    if (argc <= 3) {
+    else if (argc >= 3) {
         stdInOut (STDIN_FILENO);/* allows input output functionality if (tail -n 10) is provided*/
 
     } else if (argc > 3) {
@@ -103,7 +125,7 @@ int main(const int argc, char *argv[])
                 writeBytes (fd, offset);
             }
         }
-    }
+    } else errorMess (errno);
 
     if (close (fd) == -1)
         errorMess (errno);
@@ -197,7 +219,9 @@ void stdInOut(int fd) {
     string content;
 
 
-    while ((n = read (STDIN_FILENO, buffer, BUFF_SIZE)) > 0) { // read the entire buffer
+    /* strings are '\0' terminating*/
+    while ((n = read (fd, buffer, BUFF_SIZE)) > 0) { // read the entire buffer
+        buffer[n] = '\0';
         content += buffer;
     }
 
@@ -208,8 +232,9 @@ void stdInOut(int fd) {
         storage[z] = s;
         z++;
     }
+    storage[z] = '\0';
 
     /* Only way to match shell was to used unbuffered i/o */
-    if (write (STDOUT_FILENO, storage, n) == -1)
+    if (write (STDOUT_FILENO, storage, content.size ()) == -1)
         errorMess (errno);
 }
