@@ -160,7 +160,8 @@ void writeLines(int fd, int line_offset) {
         buffer[j] = '\0';
     }
 
-    while ((n = read (fd, buffer, BUFF_SIZE)) > 0) { // read the entire buffer
+    while ((n = read (fd, buffer, BUFF_SIZE)) > 0) {
+        buffer[n] = '\0';
         content += buffer;
 
     }
@@ -171,11 +172,12 @@ void writeLines(int fd, int line_offset) {
         if (letter == '\n') {
             lineCount++;
         }
-        if (line_offset == lineCount)
+        if (line_offset < lineCount)
             break;
     }
     /* i points to 'n' character and we want everything after that.*/
     content = content.substr (i + 1, content.size ());
+//    string fn = filename;
     char storage[BUFF_SIZE];
     int z = 0;
     for (char &s: content) {
