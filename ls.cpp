@@ -118,7 +118,7 @@ void printDirectory( char* myDirectory, string option){
                }
                counter++;
           }//while loop
-
+          closedir(dir);
 
 
      //my implementation of the sorting method
