@@ -32,57 +32,33 @@ void errorMess(int err);
 
 void stdInOut(int fd);
 
-int main(const int argc, char *argv[])
-{
+int main(const int argc, char *argv[]) {
 
     struct stat buf;
     char *filename;
     bool useLines = 0;
     string arg = "";
     int fd;
-    int offset =0;// number bytes or lines specified
+    int offset = 0;// number bytes or lines specified
+    bool option = false;
 
-     if (argc==1)
+    if (argc == 1)
     {
         stdInOut (STDIN_FILENO);
     }
-
-    else if (argc < 2)
+    if (argc >= 2)
     {
-        errorMess (1);
-    }
-    /* command prompt simply takes input when no filename specified*/
-    else if (argc == 2) {
-        if (stat (argv[1], &buf) == -1)
-        {
-            errorMess (errno);
-        }if (S_ISDIR (buf.st_mode) == 1) /*dir, do not do anything*/
-            return 0;
 
-        else if (S_ISREG(buf.st_mode) == 0) /*not regular file*/
-            errorMess (errno);
-        filename = argv[1];
-
-        fd = open (filename, O_RDONLY);/* open file to read its content*/
-        if (fd == -1) errorMess (errno);
-
-        stdInOut (fd);
-
-    }
-
-        /* If the args are thr right number, make sure they are the right kind*/
-    else if (argc > 2) {
         if (strcmp (argv[1], "-n") == 0)/* number of lines option*/
         {
-
             arg = argv[2];
             for (char &c: arg) {
-//                cout << c <<" is a digit: "<< isdigit (c) <<  endl;
                 if (isdigit (c) == 0)
                     errorMess (1);
             }
             offset = stoi (argv[2]);
             useLines = true;
+            option = true;
 
         } else if (strcmp (argv[1], "-c") == 0)/* number of bytes option*/
         {
@@ -93,20 +69,43 @@ int main(const int argc, char *argv[])
             }
             offset = stoi (argv[2]);
             useLines = false;
-        } else errorMess (1);
-    }
+            option = true;
+        }
+        /* loop for multiple file inputs */
+        for (int i =1 ,j =i; i < argc; i++)
+        {
+            cout << " name "<< argv[i] << endl;
+            /* option not provided*/
+            if (option == false)
+            {
+                if (stat (argv[i], &buf) == -1)
+                {
+                    errorMess (errno);
+                }
+                if (S_ISDIR (buf.st_mode) == 1) /*dir, do not do anything*/
+                    return 0;
 
-    /*  arguments are provided*/
-    /*check to make sure regular file*/
+                else if (S_ISREG(buf.st_mode) == 0) /*not regular file*/
+                    errorMess (errno);
 
-    else if (argc >= 3) {
-        stdInOut (STDIN_FILENO);/* allows input output functionality if (tail -n 10) is provided*/
+                filename = argv[i];/*assign filename*/
+                fd = open (filename, O_RDONLY);/* open file to read its content*/
+                if (fd == -1) errorMess (errno);
 
-    } else if (argc > 3) {
-        for (int i = 3; i < argc; i++) {
-            if (stat (argv[3], &buf) == -1) {
-                errorMess (errno);
+
+                if(argv[j++] != nullptr||argv[j--] != nullptr)
+                    cout << "==>" << filename << "<==" << endl;
+
+                writeLines (fd, 10);/* default is 10 lines*/
+                continue;
             }
+            /* option provided*/
+            if(option == true && i == 1)
+            i =3;
+
+            if (stat (argv[i], &buf) == -1)
+                errorMess (errno);
+
             /*check to ensure valid type*/
             if (S_ISDIR (buf.st_mode) == 1) /*dir, do not do anything*/
                 return 0;
@@ -114,10 +113,13 @@ int main(const int argc, char *argv[])
             else if (S_ISREG(buf.st_mode) == 0) /*not regular file*/
                 errorMess (errno);
 
-            filename = argv[3];/*argv[4] is a valid filename*/
+            filename = argv[i];/*argv[4] is a valid filename*/
 
             fd = open (filename, O_RDONLY);/* open file to read its content*/
             if (fd == -1) errorMess (errno);
+
+            if(argv[j++] != nullptr || argv[j--] != nullptr)
+                cout << "==>" << filename << "<==" << endl;
 
             if (useLines) {
                 writeLines (fd, offset);
@@ -125,7 +127,10 @@ int main(const int argc, char *argv[])
                 writeBytes (fd, offset);
             }
         }
-    } else errorMess (errno);
+
+    }
+
+    else errorMess (errno);
 
     if (close (fd) == -1)
         errorMess (errno);
@@ -166,7 +171,8 @@ void errorMess(int err) {
 }
 
 
-void writeLines(int fd, int line_offset) {
+void writeLines(int fd, int line_offset)
+{
     int lineCount = 0;
 //    string s[BUFF_SIZE];
     string content;
@@ -191,7 +197,8 @@ void writeLines(int fd, int line_offset) {
     for (i = content.size () - 1; i >= 0; --i) {
         char letter = content[i];
 
-        if (letter == '\n') {
+        if (letter == '\n')
+        {
             lineCount++;
         }
         if (line_offset < lineCount)
@@ -213,6 +220,7 @@ void writeLines(int fd, int line_offset) {
 
 }
 
+//
 void stdInOut(int fd) {
     int n;
     char buffer[BUFF_SIZE];
@@ -220,7 +228,8 @@ void stdInOut(int fd) {
 
 
     /* strings are '\0' terminating*/
-    while ((n = read (fd, buffer, BUFF_SIZE)) > 0) { // read the entire buffer
+    while ((n = read (fd, buffer, BUFF_SIZE)) > 0)
+    { // read the entire buffer
         buffer[n] = '\0';
         content += buffer;
     }
