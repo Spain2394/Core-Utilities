@@ -302,23 +302,14 @@ int main( int argc,  char * argv []){//this my main
           }
           //prints out the user supplied directories with no flags
           else{
-               char* selDir;
                for(int i=1;i<argc;i++){
-                    selDir=argv[i];
-                    string argv[i](selDir);
-                    if((dir=opendir(selDir))==NULL){
-                         cout<<"ls: cannot access "<<argv[i]<<": "<<strerror(errno)<<endl;
-                         closedir(dir);
+                    if(argc>1){
+                         cout<<argv[i]<<":"<<endl;
                     }
-                    else{
-                         if(argc>1){
-                              cout<<argv[i]<<":"<<endl;
-                         }
-                         printDirectory(selDir,"none");
-                         closedir(dir);
-                         if(i!=argc-1){
-                              cout<<endl;
-                         }
+                    printDirectory(argv[i],"none");
+                    closedir(dir);
+                    if(i!=argc-1){
+                         cout<<endl;
                     }
                }
           }
@@ -327,6 +318,5 @@ int main( int argc,  char * argv []){//this my main
      free(currentDir);
 
 //done
-
      return EXIT_SUCCESS;
 }//This my main
