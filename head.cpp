@@ -35,8 +35,15 @@ bool isThisAnInt(string meh){
 void printStuff(char* fileName, int howManyLines){
      const int BUFF_SIZE =1000000;
      int fd=open(fileName,O_RDONLY);
+
+     stat(fileName,&statbuf);
+     if(S_ISDIR(statbuf.st_mode)){//directory
+          cout<<"head: error reading '"<<fileName<<"': Is a directory"<<endl;
+          exit(0);
+     }//Directory
      if (fd==-1){
           cout<<"head: cannot open '"<<fileName<<"' for reading: "<<strerror(errno)<<endl;
+          exit(0);
      }
      int line_offset=howManyLines;
      int lineCount = 1;
@@ -124,21 +131,10 @@ int main(int argc, char * argv []){//this my main
                          }
                          else{
                               stat(argv[i], &statbuf);
-                              if(S_ISREG(statbuf.st_mode)){//print stuff out
                                    if(argc>4){
                                         cout<<"==> "<<fileName<<" <=="<<endl;
                                    }
                                    printStuff(fileName,howManyLines);
-                              }//print stuff out
-                              else if(S_ISDIR(statbuf.st_mode)){//directory
-                                   cout<<"head: error reading '"<<fileName<<"': Is a directory"<<endl;
-                                   return EXIT_FAILURE;
-                              }//Directory
-                              else{//Unknown file
-                                   //cout<<"I got this far"<<endl;
-                                   cout<<"head: error reading '"<<fileName<<"': Unknown file type"<<endl;
-                                   return EXIT_FAILURE;
-                              }//Unknown file
                          }
                     }//incrementing through argv
                }//valid input for number of lines
@@ -161,20 +157,11 @@ int main(int argc, char * argv []){//this my main
                     }
                     else{
                          stat(argv[i], &statbuf);
-                         if(S_ISREG(statbuf.st_mode)){//print stuff out
                               if(argc>2){
                                    cout<<"==> "<<fileName<<" <=="<<endl;
                               }
                               printStuff(fileName);
-                         }//print stuff out
-                         else if(S_ISDIR(statbuf.st_mode)){//directory
-                              cout<<"head: error reading '"<<fileName<<"': Is a directory"<<endl;
-                              return EXIT_FAILURE;
-                         }//Directory
-                         else{//Unknown file
-                              cout<<"head: error reading '"<<fileName<<"': Unknown file type"<<endl;
-                              return EXIT_FAILURE;
-                         }//Unknown file
+
                     }
                }//incrementing through argv
           }//was not given number of lines to print
