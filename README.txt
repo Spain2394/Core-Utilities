@@ -1,20 +1,23 @@
-#Project 2: Basic Unix Utilities
+#**Project 2**
+##Basic Unix Utilities
 
-7/31/2017
 Allen Spain (811-565-587)
 
+Nathan Su   (811-342-394)
+
+7/31/2017
+
+________________________________________________________________________________
 ## Instructions
 
-To compile and link my code, type:
-make
+To compile and link all the programs, type: '$make' into the console.
 
 
-To run my code, type:
-./[executable]
+To run a program, type: '$./[executable]' followed by the corresponding flags
+and arguments.
 
 
-To clean, type: 
-make clean
+To clean, removing the source and executable files, type: '$make clean' into 
+the console.
 
 
-## Reflection
