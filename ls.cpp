@@ -17,6 +17,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
+#include <cerrno>
 
 using namespace std;
 
@@ -45,6 +46,12 @@ struct myFiles{
  */
 
 void printDirectory( char* myDirectory, string option){
+     if((dir=opendir(myDirectory))==NULL){
+          cout<<"ls: cannot access "<<myDirectory<<": "<<strerror(errno)<<endl;
+          closedir(dir);
+          exit(0);
+     }
+     closedir(dir);
      //creating an array of strings representing the file names in a folder sorted alphabetically
           struct dirent **namelist;
           int n;
@@ -211,6 +218,7 @@ int main( int argc,  char * argv []){//this my main
      string option="none";
       char* currentDir=get_current_dir_name();
 
+
      //prints out using the default settings
      if(argc==1){//no options, no selected directories
           printDirectory(currentDir,option);
@@ -225,26 +233,17 @@ int main( int argc,  char * argv []){//this my main
                if(argc==2){
                     //prints the current directory with the flag
                     printDirectory(currentDir,"-a");
+                    free(currentDir);
                }
                else{
                     //prints out each directory supplied by the user with the -a flag
-                     char* selDir;
                     for(int i=2;i<argc;i++){
-                         selDir=argv[i];
-                         string durdurdur(selDir);
-                         if((dir=opendir(selDir))==NULL){
-                              cout<<"ls: cannot access "<<durdurdur<<": "<<strerror(errno)<<endl;
-                              closedir(dir);
+                         if(argc>3){
+                              cout<<argv[i]<<":"<<endl;
                          }
-                         else{
-                              if(argc>3){
-                                   cout<<durdurdur<<":"<<endl;
-                              }
-                              printDirectory(selDir,"-a");
-                              closedir(dir);
-                              if(i!=argc-1){
-                                   cout<<endl;
-                              }
+                         printDirectory(argv[i],"-a");
+                         if(i!=argc-1){
+                              cout<<endl;
                          }
                     }
                }
@@ -255,26 +254,17 @@ int main( int argc,  char * argv []){//this my main
                if(argc==2){
                     //prints out the current directory with the -l flag
                     printDirectory(currentDir,"-l");
+                    free(currentDir);
                }
                else{
-                    //prints out each directory supplied by the user with the -a flag
-                     char* selDir;
+                    //prints out each directory supplied by the user with the -l flag
                     for(int i=2;i<argc;i++){
-                         selDir=argv[i];
-                         string durdurdur(selDir);
-                         if((dir=opendir(selDir))==NULL){
-                              cout<<"ls: cannot access "<<durdurdur<<": "<<strerror(errno)<<endl;
-                              closedir(dir);
+                         if(argc>3){
+                              cout<<argv[i]<<":"<<endl;
                          }
-                         else{
-                              if(argc>3){
-                                   cout<<durdurdur<<":"<<endl;
-                              }
-                              printDirectory(selDir,"-l");
-                              closedir(dir);
-                              if(i!=argc-1){
-                                   cout<<endl;
-                              }
+                         printDirectory(argv[i],"-l");
+                         if(i!=argc-1){
+                              cout<<endl;
                          }
                     }
                }
@@ -284,26 +274,17 @@ int main( int argc,  char * argv []){//this my main
                if(argc==2){
                     //prints current directory with the flags
                     printDirectory(currentDir,"-la");
+                    free(currentDir);
                }
                else{
                     //prints user supplied directories with the flags
-                     char* selDir;
                     for(int i=2;i<argc;i++){
-                         selDir=argv[i];
-                         string durdurdur(selDir);
-                         if((dir=opendir(selDir))==NULL){
-                              cout<<"ls: cannot access "<<durdurdur<<": "<<strerror(errno)<<endl;
-                              closedir(dir);
+                         if(argc>3){
+                              cout<<argv[i]<<":"<<endl;
                          }
-                         else{
-                              if(argc>3){
-                                   cout<<durdurdur<<":"<<endl;
-                              }
-                              printDirectory(selDir,"-al");
-                              closedir(dir);
-                              if(i!=argc-1){
-                                   cout<<endl;
-                              }
+                         printDirectory(argv[i],"-al");
+                         if(i!=argc-1){
+                              cout<<endl;
                          }
                     }
                }
@@ -321,17 +302,17 @@ int main( int argc,  char * argv []){//this my main
           }
           //prints out the user supplied directories with no flags
           else{
-                char* selDir;
+               char* selDir;
                for(int i=1;i<argc;i++){
                     selDir=argv[i];
-                    string durdurdur(selDir);
+                    string argv[i](selDir);
                     if((dir=opendir(selDir))==NULL){
-                         cout<<"ls: cannot access "<<durdurdur<<": "<<strerror(errno)<<endl;
+                         cout<<"ls: cannot access "<<argv[i]<<": "<<strerror(errno)<<endl;
                          closedir(dir);
                     }
                     else{
                          if(argc>1){
-                              cout<<durdurdur<<":"<<endl;
+                              cout<<argv[i]<<":"<<endl;
                          }
                          printDirectory(selDir,"none");
                          closedir(dir);
@@ -343,6 +324,7 @@ int main( int argc,  char * argv []){//this my main
           }
 
      }
+     free(currentDir);
 
 //done
 
