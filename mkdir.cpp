@@ -63,4 +63,5 @@ int main(int argc, char * argv []){//this my main
                //cout<<"There should be a directory now"<<endl;
           }//moving through the args
      }//no m
+     return EXIT_SUCCESS;
 }//this my main

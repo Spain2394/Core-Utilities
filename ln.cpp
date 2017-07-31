@@ -42,5 +42,5 @@ int main(const int argc, const char * argv []){//this my main
                return EXIT_FAILURE;
           }
      }
-
+     return EXIT_SUCCESS;
 }// this my main
