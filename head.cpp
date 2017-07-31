@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <sys/sendfile.h>
 #include <dirent.h>
+#include <cerrno>
 
 using namespace std;
 
@@ -31,47 +32,73 @@ bool isThisAnInt(string meh){
      return true;
 }
 
-void printStuff(string fileName){
-     ifstream myfile (fileName);
-     string line;
-     while (getline(myfile,line)){
-          cout<<line<<endl;
+void printStuff(char* fileName, int howManyLines){
+     const int BUFF_SIZE =1000000;
+     int fd=open(fileName,O_RDONLY);
+     if (fd==-1){
+          cout<<"head: cannot open '"<<fileName<<"' for reading: "<<strerror(errno)<<endl;
      }
+     int line_offset=howManyLines;
+     int lineCount = 1;
+     //    string s[BUFF_SIZE];
+     string content;
+     // size of data buffer
+     char buffer[BUFF_SIZE];    // data buffer
+
+     int n = 0;
+     unsigned int i = 0;// number of bytes read
+
+
+     /*otherwise buffer has biazaaar characters*/
+     for (int j = 0; j < BUFF_SIZE; ++j) {
+         buffer[j] = '\0';
+     }
+
+     while ((n = read (fd, buffer, BUFF_SIZE)) > 0) {
+         buffer[n] = '\0';
+         content += buffer;
+
+     }
+
+     for (i=0;i<content.size()-1;i++) {
+         char letter = content[i];
+
+         if (letter == '\n') {
+            lineCount++;
+         }
+         if (line_offset < lineCount)
+            break;
+     }
+     /* i points to 'n' character and we want everything after that.*/
+     content = content.substr (0,i+1);
+     char storage[BUFF_SIZE];
+     int z = 0;
+     for (char &s: content) {
+         storage[z] = s;
+         z++;
+     }
+
+     /* Only way to match shell was to used unbuffered i/o */
+     if (write (STDOUT_FILENO, storage, content.size ()) == -1)
+        cout<<"head: cannot write '"<<fileName<<"' to standard output: "<<strerror(errno)<<endl;
+
 }
 
-void printStuff(string fileName, int howManyLines){
-     ifstream myfile (fileName);
-     int numLines=0;
-     string line;
-     while(getline(myfile,line)){
-          numLines++;
-     }
-     myfile.close();
-
-     string *allTheLines;
-     allTheLines = new string[numLines];
-     int counter=0;
-
-     myfile.open(fileName);
-     while (getline(myfile,line)){
-          allTheLines[counter]=line;
-          counter++;
-     }
-     myfile.close();
-     for(int i=0;i<howManyLines;i++){
-          cout<<allTheLines[i]<<endl;
-     }
+void printStuff(char* fileName){
+     printStuff(fileName,10);
 }
 
 void printMyStuff(){
-     while(!cin.eof()){//checking for ctrl d
-          string printThis;
-          getline(cin,printThis);
-          cout<<printThis<<endl;
-     }//while statement
+     const int BUFF_SIZE = 1000000; // size of data buffer
+     char buffer [BUFF_SIZE];    // data buffer
+     int n = 0;                  // number of bytes read
+
+     while ((n = read(STDIN_FILENO, buffer, BUFF_SIZE)) > 0) {
+       if (write(STDOUT_FILENO, buffer, n) == -1) perror("write");
+     } // while
 }
 
-int main(const int argc, const char * argv []){//this my main
+int main(int argc, char * argv []){//this my main
 
      if (argc==1){
           printMyStuff();
@@ -86,8 +113,10 @@ int main(const int argc, const char * argv []){//this my main
                if(isThisAnInt(temp)){
                     int howManyLines=stoi(temp);
                     for (int i = 3;i<argc;i++){
-                         string fileName=argv[i];
-                         if(fileName=="-"){
+                         char* fileName=argv[i];
+                         char meh='-';
+                         char* dash=&meh;
+                         if(strcmp(fileName,dash)==0){
                               if(argc>4){
                                    cout<<"==> standard input <=="<<endl;
                               }
@@ -121,8 +150,10 @@ int main(const int argc, const char * argv []){//this my main
           }//Given -n
           else{//Was not given number of lines to print
                for (int i = 1;i<argc;i++){
-                    string fileName=argv[i];
-                    if(fileName=="-"){
+                    char* fileName=argv[i];
+                    char meh='-';
+                    char* dash=&meh;
+                    if(strcmp(fileName,dash)==0){
                          if(argc>2){
                               cout<<"==> standard input <=="<<endl;
                          }
