@@ -24,6 +24,7 @@ struct stat statbuff;
 struct dirent *dname;
 DIR *dir;
 
+//Struct representing all the information held by a file
 struct myFiles{
      char *name;
      string permissions;
@@ -37,8 +38,14 @@ struct myFiles{
      int position;
 };
 
-int printDirectory(const char* myDirectory, string option){
-     //possibly the stupidest way to sort this
+/**
+ * [printDirectory This function is the bulk of the code, opening directories, reading their files, and printing out the contents according to user direction]
+ * @param myDirectory [the directory printDirectory is being called upon]
+ * @param option      [Supplies the options -a and/or -l]
+ */
+
+void printDirectory(const char* myDirectory, string option){
+     //creating an array of strings representing the file names in a folder sorted alphabetically
           struct dirent **namelist;
           int n;
           string sortedNames="";
@@ -66,10 +73,6 @@ int printDirectory(const char* myDirectory, string option){
 
           int numFiles=0;
           int counter=0;
-          if((dir=opendir(myDirectory))==NULL){
-               cout<<"Something's wrong"<<endl;
-               return EXIT_FAILURE;
-          }
 
           while((dname=readdir(dir))){
                numFiles++;
@@ -77,9 +80,10 @@ int printDirectory(const char* myDirectory, string option){
           closedir(dir);
           if((dir=opendir(myDirectory))==NULL){
                cout<<"Something's wrong"<<endl;
-               return EXIT_FAILURE;
+               //return EXIT_FAILURE;
           }
 
+          //creating and filling an array of myFiles struct objects with each respective file's information
           myFiles * FILES;
           FILES=new myFiles[numFiles];
           while((dname=readdir(dir))){
@@ -113,18 +117,9 @@ int printDirectory(const char* myDirectory, string option){
                counter++;
           }//while loop
 
-          //cout<<totalEntries<<endl;
-
-          /*for (int i=0;i<counter;i++){
-               string lower = FILES[i].name;
-               cout<<lower<<endl;
-               for(int j=0;lower.length();j++){
-                    FILES[i].NAME[j]=toupper(lower[j]);
-
-               }
-          }*/
 
      //my implementation of the stupidest sorting method
+     //searches through the sorted string array for file names and matches the order with the myFiles array
           string fileName;
           for(int i=0;i<totalEntries;i++){
                fileName=FILES[i].name;
@@ -138,6 +133,7 @@ int printDirectory(const char* myDirectory, string option){
           }
      //I am the King Midas of spaghetti-code
 
+     //prints out given the option of having no additional arguments
           if (option.compare("none")==0){//No additional arguments
                for(int i=0;i<totalEntries;i++){
                     for(int j=0;j<totalEntries;j++){
@@ -151,7 +147,7 @@ int printDirectory(const char* myDirectory, string option){
                }
 
           }//No additional arguments
-
+          //prints out given the argument -a for all
           else if(option.compare("-a")==0){//List all
                for(int i=0;i<totalEntries;i++){
                     for(int j=0;j<totalEntries;j++){
@@ -162,7 +158,7 @@ int printDirectory(const char* myDirectory, string option){
                     }
                }
           }
-
+          //prints out given the argument -l for long list
           else if(option.compare("-l")==0){//List all
                for(int i=0;i<totalEntries;i++){
                     for(int j=0;j<totalEntries;j++){
@@ -183,6 +179,7 @@ int printDirectory(const char* myDirectory, string option){
                }
           }
 
+          //prints out given the option for both long list and all
           else if(option.compare("-la")==0||option.compare("-al")==0){
                for(int i=0;i<totalEntries;i++){
                     for(int j=0;j<totalEntries;j++){
@@ -199,26 +196,41 @@ int printDirectory(const char* myDirectory, string option){
                     }
                }
           }
+
+          //tries to clean up
           delete[] sortedd;
           delete[] FILES;
 }
 
+/**
+ * [main driver for the program taking in user input]
+ * @param  argc [number of arguments supplied by the user]
+ * @param  argv [array of the arguments supplied by the user]
+ * @return      [returns EXIT_SUCCESS if everything is successfully printed and EXIT_FAILURE otherwise]
+ */
+
 int main(const int argc, const char * argv []){//this my main
 
-string option="none";
-const char* currentDir=get_current_dir_name();
+     //default to having no additional flags and uses the current directory
+     string option="none";
+     const char* currentDir=get_current_dir_name();
 
+     //prints out using the default settings
      if(argc==1){//no options, no selected directories
           printDirectory(currentDir,option);
      }//no options, no selected directories
 
      else if(argc>1){
           string secArg=argv[1];
+
+          //Looks for the -a flag
           if(secArg.compare("-a")==0){
                if(argc==2){
+                    //prints the current directory with the flag
                     printDirectory(currentDir,"-a");
                }
                else{
+                    //prints out each directory supplied by the user with the -a flag
                     const char* selDir;
                     for(int i=2;i<argc;i++){
                          selDir=argv[i];
@@ -236,11 +248,15 @@ const char* currentDir=get_current_dir_name();
                     }
                }
           }
+
+          //looking for the -l flag
           else if(secArg.compare("-l")==0){
                if(argc==2){
+                    //prints out the current directory with the -l flag
                     printDirectory(currentDir,"-l");
                }
                else{
+                    //prints out each directory supplied by the user with the -a flag
                     const char* selDir;
                     for(int i=2;i<argc;i++){
                          selDir=argv[i];
@@ -258,11 +274,14 @@ const char* currentDir=get_current_dir_name();
                     }
                }
           }
+          //looks for the presence of both the -a and the -l flags
           else if(secArg.compare("-al")==0||secArg.compare("-la")==0){
                if(argc==2){
+                    //prints current directory with the flags
                     printDirectory(currentDir,"-la");
                }
                else{
+                    //prints user supplied directories with the flags
                     const char* selDir;
                     for(int i=2;i<argc;i++){
                          selDir=argv[i];
@@ -280,9 +299,10 @@ const char* currentDir=get_current_dir_name();
                     }
                }
           }
+          //looks for improper flags
           else if(secArg.substr(0,1).compare("-")==0){
                cout<<"ls: invalid option --'";
-               for(int i=1;i<secArg.length();i++){
+               for(unsigned int i=1;i<secArg.length();i++){
                     if(secArg.substr(i,1).compare("a")!=0&&secArg.substr(i,1).compare("l")!=0){
                          cout<<secArg[i];
                          break;
@@ -290,7 +310,7 @@ const char* currentDir=get_current_dir_name();
                }
                cout<<"'"<<endl;
           }
-
+          //prints out the user supplied directories with no flags
           else{
                const char* selDir;
                for(int i=1;i<argc;i++){
@@ -311,6 +331,6 @@ const char* currentDir=get_current_dir_name();
 
      }
 
-
+//done
      return EXIT_SUCCESS;
 }//This my main
