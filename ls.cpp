@@ -73,6 +73,10 @@ void printDirectory(const char* myDirectory, string option){
 
           int numFiles=0;
           int counter=0;
+          if((dir=opendir(myDirectory))==NULL){
+               cout<<"Something's wrong"<<endl;
+               //return EXIT_FAILURE;
+          }
 
           while((dname=readdir(dir))){
                numFiles++;
