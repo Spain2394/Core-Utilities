@@ -222,7 +222,6 @@ int main( int argc,  char * argv []){//this my main
      //prints out using the default settings
      if(argc==1){//no options, no selected directories
           printDirectory(currentDir,option);
-          free(currentDir);
      }//no options, no selected directories
 
      else if(argc>1){
@@ -233,7 +232,6 @@ int main( int argc,  char * argv []){//this my main
                if(argc==2){
                     //prints the current directory with the flag
                     printDirectory(currentDir,"-a");
-                    free(currentDir);
                }
                else{
                     //prints out each directory supplied by the user with the -a flag
@@ -254,7 +252,6 @@ int main( int argc,  char * argv []){//this my main
                if(argc==2){
                     //prints out the current directory with the -l flag
                     printDirectory(currentDir,"-l");
-                    free(currentDir);
                }
                else{
                     //prints out each directory supplied by the user with the -l flag
@@ -274,7 +271,6 @@ int main( int argc,  char * argv []){//this my main
                if(argc==2){
                     //prints current directory with the flags
                     printDirectory(currentDir,"-la");
-                    free(currentDir);
                }
                else{
                     //prints user supplied directories with the flags
@@ -303,7 +299,7 @@ int main( int argc,  char * argv []){//this my main
           //prints out the user supplied directories with no flags
           else{
                for(int i=1;i<argc;i++){
-                    if(argc>1){
+                    if(argc>2){
                          cout<<argv[i]<<":"<<endl;
                     }
                     printDirectory(argv[i],"none");
