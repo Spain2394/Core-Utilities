@@ -95,15 +95,26 @@ void printStuff(char* fileName){
      printStuff(fileName,10);
 }
 
-void printMyStuff(){
+void printMyStuff(int lines){
      const int BUFF_SIZE = 1000000; // size of data buffer
      char buffer [BUFF_SIZE];    // data buffer
      int n = 0;                  // number of bytes read
-
-     while ((n = read(STDIN_FILENO, buffer, BUFF_SIZE)) > 0) {
-       if (write(STDOUT_FILENO, buffer, n) == -1) perror("write");
+     int counter=0;
+     while (counter<lines) {
+          if((n = read(STDIN_FILENO, buffer, BUFF_SIZE)) > 0){
+               if (write(STDOUT_FILENO, buffer, n) == -1 ){
+                    perror("write");
+               }
+               counter++;
+          }
      } // while
 }
+
+
+void printMyStuff(){
+     printMyStuff(10);
+}
+
 
 int main(int argc, char * argv []){//this my main
 
@@ -127,7 +138,7 @@ int main(int argc, char * argv []){//this my main
                               if(argc>4){
                                    cout<<"==> standard input <=="<<endl;
                               }
-                              printMyStuff();
+                              printMyStuff(howManyLines);
                          }
                          else{
                               stat(argv[i], &statbuf);
