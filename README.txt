@@ -21,3 +21,20 @@ To clean, removing the source and executable files, type: '$make clean' into
 the console.
 
 
+#Reflections:
+
+tail:
+Learned you can seek from end of file using a negative offset from the end.
+
+true/false:
+Trivial, return 0 for true, 1 for false.
+
+wc:
+Program structure makes all the difference, static variables made it so we had easy access
+the data, since it would update global variables without excessive pass-by-reference.
+
+env:
+Use main prototype which includes the environmental variables array and them iterate over the
+length of the array.
+
+
