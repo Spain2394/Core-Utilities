@@ -1,6 +1,8 @@
-//
-// Created by Allen Spain on 7/29/17.
-//
+
+/*!
+ *Program doesn't do anything.
+ * @return 1 for exit failure.
+ */
 
 #include <cstdlib>
 

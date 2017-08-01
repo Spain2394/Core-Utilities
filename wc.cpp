@@ -1,6 +1,3 @@
-//
-// Created by Allen Spain on 7/29/17.
-//
 
 #include <iostream>
 #include <cstdlib>
@@ -24,15 +21,35 @@ static int totalBytes = 0;
 
 
 /* Prototypes */
+
+/*!
+ *Print sum of lines, words and characters.
+ * @param l integer represents number of lines in file.
+ * @param w integer represents number of words in file.
+ * @param c integer represents characters in file.
+ * @param filename char pointer reprsents filename.
+ */
 void printSum(int l, int w, int c, char *filename);
 
+/*!
+ * Gets content from file.
+ * @param fd int represents file descriptor.
+ * @return string containing file content.
+ */
 string fileContent(int fd);
 
+/*!
+ * Print error message
+ * @param missive const char pointer represents an error message.
+ */
 void errorMess(const char *missive);
 
+/*!
+ * Compute sum given a file's content.
+ * @param content string represents file content.
+ * @param option represents user specified option.
+ */
 void sum(string content, string option);
-
-//string stdInOut(int fd);
 
 int main(int argc, char *argv[]) {
 
@@ -196,40 +213,3 @@ void printSum(int l, int w, int c, char *filename) {
 
     cout << numLines << " " << numWords << " " << numBytes << " " << filename << "\n";
 }
-//void printSumTotal()
-//{
-//    cout << numLines <<" "<<numWords<<" "<<numBytes<< " total" <<"\n";
-//}
-//string stdInOut(int fd)
-//{
-//    int n;
-//    char buffer[BUFF_SIZE];
-//
-//    string content = "";
-//
-//    /* strings are '\0' terminating*/
-//    while ((n = read (fd, buffer, BUFF_SIZE)) > 0) { // read the entire buffer
-//        buffer[n] = '\0';
-//        content += buffer;
-//    }
-//
-//    char storage[BUFF_SIZE];
-//    int z = 0;
-//    for (char &s: content) {
-//
-//        storage[z] = s;
-//        z++;
-//    }
-//    storage[z] = '\0';
-//
-//    /* Only way to match shell was to used unbuffered i/o */
-//    if (write (STDOUT_FILENO, storage, content.size ()) == -1)
-//        errorMess ("write");
-//
-//    for(char c: storage)
-//    {
-//        content += storage;
-//    }
-//
-//}
-

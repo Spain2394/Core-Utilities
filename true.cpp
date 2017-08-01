@@ -1,9 +1,9 @@
-//
-// Created by Allen Spain on 7/29/17.
-//
-
 
 #include <cstdlib>
+/*!
+ *
+ * @return 0 for exit success.
+ */
 
 int main ()
 {

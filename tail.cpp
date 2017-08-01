@@ -1,6 +1,3 @@
-//
-// Created by Allen Spain on 7/29/17.
-//
 
 #include <iostream>
 #include <cstdlib>
@@ -24,13 +21,32 @@ const int BUFF_SIZE = 8192;
 
 
 /*function prototypes*/
+/*!
+ * Writes tail end of a file, specified by the offset from end.
+ * @param fd integer represents file descriptor.
+ * @param line_offset integer that represents number of lines from the end of the file to write.
+ */
 void writeLines(int fd, int line_offset);
 
+/*!
+ * Write some number of bytes in a file starting from the end.
+ * @param fd int represents a file descriptor.
+ * @param byte_offset int that represents offset in bytes from end.
+ */
 void writeBytes(int fd, int byte_offset);
 
+/*!
+ *Prints error message.
+ * @param err int mapped to an error message.
+ */
 void errorMess(int err);
 
+/*!
+ * Standard input, output.
+ * @param fd int represents file descriptor.
+ */
 void stdInOut(int fd);
+
 
 int main(const int argc, char *argv[]) {
 
@@ -44,7 +60,8 @@ int main(const int argc, char *argv[]) {
 
     if (argc == 1)
     {
-        stdInOut (STDIN_FILENO);
+        writeLines (STDIN_FILENO,10);
+//        stdInOut (STDIN_FILENO);
     }
     if (argc >= 2)
     {
@@ -74,7 +91,7 @@ int main(const int argc, char *argv[]) {
         /* loop for multiple file inputs */
         for (int i =1 ,j =i; i < argc; i++)
         {
-            cout << " name "<< argv[i] << endl;
+
             /* option not provided*/
             if (option == false)
             {
@@ -118,7 +135,7 @@ int main(const int argc, char *argv[]) {
             fd = open (filename, O_RDONLY);/* open file to read its content*/
             if (fd == -1) errorMess (errno);
 
-            if(argv[j++] != nullptr || argv[j--] != nullptr)
+            if(option == true && argc > 4) // tail -n 10
                 cout << "==>" << filename << "<==" << endl;
 
             if (useLines) {
@@ -130,7 +147,8 @@ int main(const int argc, char *argv[]) {
 
     }
 
-    else errorMess (errno);
+//    else errorMess (errno);
+
 
     if (close (fd) == -1)
         errorMess (errno);
@@ -149,7 +167,8 @@ void writeBytes(int fd, int byte_offset) {
 
 
     if (byte_offset > len)
-        errorMess (errno);
+        byte_offset = len;
+
 
 
     off_t last_bytes = lseek (fd, -byte_offset, SEEK_END);
@@ -166,7 +185,7 @@ void writeBytes(int fd, int byte_offset) {
 void errorMess(int err) {
 
 
-    cerr << "ERROR " << strerror (errno) << endl;
+    cerr << "ERROR: " << strerror (errno) << endl;
     exit (EXIT_FAILURE); // exit program
 }
 
