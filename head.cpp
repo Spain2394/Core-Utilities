@@ -22,6 +22,12 @@ struct dirent *ent;
 struct stat statbuf;
 off_t offset=0;
 
+/**
+ * [isThisAnInt takes in a string representing user's input for number of lines and determines if it's an int]
+ * @param  meh [the string being tested]
+ * @return     [returns true or false depending if the string is an int]
+ */
+
 bool isThisAnInt(string meh){
      for(char& c:meh){
           //cout<<c<<endl;
@@ -32,10 +38,17 @@ bool isThisAnInt(string meh){
      return true;
 }
 
+/**
+ * [printStuff takes in a filename and the number of lines to print and prints them to stdout]
+ * @param fileName     [name of file being printed out]
+ * @param howManyLines [number of lines to print out]
+ */
+
 void printStuff(char* fileName, int howManyLines){
      const int BUFF_SIZE =1000000;
      int fd=open(fileName,O_RDONLY);
 
+//checking if the file given is a directory
      stat(fileName,&statbuf);
      if(S_ISDIR(statbuf.st_mode)){//directory
           cout<<"head: error reading '"<<fileName<<"': Is a directory"<<endl;
@@ -91,9 +104,19 @@ void printStuff(char* fileName, int howManyLines){
 
 }
 
+/**
+ * [printStuff utilizes the other printStuff function to print lines in case the number of lines isn't given (defaults to 10 lines)]
+ * @param fileName [name of the file whose contents is being printed out]
+ */
+
 void printStuff(char* fileName){
      printStuff(fileName,10);
 }
+
+/**
+ * [printMyStuff prints out the standard input to the standard output]
+ * @param lines [number of lines to take in and print out]
+ */
 
 void printMyStuff(int lines){
      const int BUFF_SIZE = 1000000; // size of data buffer
@@ -110,11 +133,20 @@ void printMyStuff(int lines){
      } // while
 }
 
+/**
+ * [printMyStuff uses the other printMyStuff function to print out stdin given no declared number of lines {defaults to 10 lines}]
+ */
 
 void printMyStuff(){
      printMyStuff(10);
 }
 
+/**
+ * [main replicates the functionality of the bash command '$head']
+ * @param  argc [number of arguments]
+ * @param  argv [array of arguments]
+ * @return      [returns EXIT_SUCCESS if program runs successfully, otherwise prints out error]
+ */
 
 int main(int argc, char * argv []){//this my main
 
@@ -134,7 +166,7 @@ int main(int argc, char * argv []){//this my main
                          char* fileName=argv[i];
                          char meh='-';
                          char* dash=&meh;
-                         if(strcmp(fileName,dash)==0){
+                         if(strcmp(fileName,dash)==0){//condition if a dash is found
                               if(argc>4){
                                    cout<<"==> standard input <=="<<endl;
                               }
@@ -160,7 +192,7 @@ int main(int argc, char * argv []){//this my main
                     char* fileName=argv[i];
                     char meh='-';
                     char* dash=&meh;
-                    if(strcmp(fileName,dash)==0){
+                    if(strcmp(fileName,dash)==0){//condition if a dash is found
                          if(argc>2){
                               cout<<"==> standard input <=="<<endl;
                          }

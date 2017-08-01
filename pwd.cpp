@@ -16,14 +16,19 @@
 
 using namespace std;
 
+/**
+ * [main program printing out the present working directory]
+ * @return [returns EXIT_SUCCESS if it successfully prints out the pwd]
+ */
+
 int main(){
      char* currentDir;
-     if((currentDir=get_current_dir_name())==NULL){
-          cout<<"I don't really know what to put for this failure... can pwd even fail? "<<strerror(errno);
+     if((currentDir=get_current_dir_name())==NULL){//gets the pwd to print out
+          cout<<"I don't really know what to put for this failure... can pwd even fail? "<<strerror(errno);//I legit have no idea what this displays when it fails
           free(currentDir);
           return EXIT_FAILURE;
      }
-     else{
+     else{//printing out the pwd
           cout<<currentDir<<endl;
           free(currentDir);
      }
