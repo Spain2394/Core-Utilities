@@ -43,7 +43,7 @@ void printStuff(char* fileName, int howManyLines){
      }//Directory
      if (fd==-1){
           cout<<"head: cannot open '"<<fileName<<"' for reading: "<<strerror(errno)<<endl;
-          exit(0);
+          return;
      }
      int line_offset=howManyLines;
      int lineCount = 1;
