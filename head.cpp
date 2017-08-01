@@ -130,6 +130,7 @@ void printMyStuff(int lines){
                }
                counter++;
           }
+          else{break;}
      } // while
 }
 
