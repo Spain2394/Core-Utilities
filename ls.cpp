@@ -118,7 +118,7 @@ void printDirectory( char* myDirectory, string option){
                }
                counter++;
           }//while loop
-          closedir(dir);
+          //closedir(dir);
 
 
      //my implementation of the sorting method
@@ -199,7 +199,7 @@ void printDirectory( char* myDirectory, string option){
                     }
                }
           }
-
+          closedir(dir);
           //tries to clean up
           delete[] sortedd;
           delete[] FILES;
@@ -217,6 +217,7 @@ int main( int argc,  char * argv []){//this my main
      //default to having no additional flags and uses the current directory
      string option="none";
       char* currentDir=get_current_dir_name();
+
 
 
      //prints out using the default settings
@@ -303,7 +304,7 @@ int main( int argc,  char * argv []){//this my main
                          cout<<argv[i]<<":"<<endl;
                     }
                     printDirectory(argv[i],"none");
-                    closedir(dir);
+                    //closedir(dir);
                     if(i!=argc-1){
                          cout<<endl;
                     }
