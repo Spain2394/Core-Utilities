@@ -4,7 +4,7 @@
 ________________________________________________________________________________
 ## Instructions
 
-To compile and link all the programs, type: '$make' into the console.
+To compile and link all the programs, type: ```$make``` into the console.
 
 
 To run a program, type: ```$./[executable]``` followed by the corresponding flags
