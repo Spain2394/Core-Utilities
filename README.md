@@ -1,5 +1,5 @@
-#**Core Utilies**
-##Basic Unix Utilities
+# **Core Utilies**...
+## Basic Unix Utilities
 
 ________________________________________________________________________________
 ## Instructions
